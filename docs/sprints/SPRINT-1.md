@@ -160,4 +160,6 @@ Estado del sprint: base implementada para revisión. Su cierre requiere demostra
 
 ## Continuidad propuesta
 
-Sprint 2: Google y Apple (RSY-12, RSY-13 y RSY-14), completar RSY-18 y RSY-19, y añadir nivel y materias (RSY-23 a RSY-28) según capacidad. La medición RSY-21 depende del alcance y de los eventos acordados.
+Sprint 2: Google y Apple (RSY-12, RSY-13 y RSY-14), completar el alcance OAuth de RSY-18 y RSY-19 y medir el registro en RSY-21. Sprint 3 incorpora nivel, materias y selección inicial de avatar. RSY-28 se valida en Sprint 6 cuando exista matchmaking; RSY-34 se cierra en Sprint 11 con perfil, ranking y duelo disponibles.
+
+Consultar el [plan general](PLAN-GENERAL.md) y la [matriz de cobertura](COBERTURA-BACKLOG.md) para los demás sprints. Las fechas y asignaciones se confirman con el equipo antes de iniciar cada uno.

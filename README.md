@@ -69,7 +69,10 @@ compose.yaml      PostgreSQL y Mailpit locales
 
 ## Planificación
 
+- [Plan general de los 23 sprints](docs/sprints/PLAN-GENERAL.md): orden de entrega, dependencias, capacidad e hitos.
+- [Cobertura del backlog](docs/sprints/COBERTURA-BACKLOG.md): asignación de las 125 tareas y las 28 subtareas propuestas.
 - [Sprint 1](docs/sprints/SPRINT-1.md): registro por correo y verificación de cuenta.
+- Los planes individuales de Sprint 2 a Sprint 23 están enlazados desde el plan general.
 
 El plan usa las claves del backlog del proyecto Jira RSY. OAuth, recuperación de contraseña, selección de materias, matchmaking, pagos y generación de preguntas quedan fuera del Sprint 1.
 
