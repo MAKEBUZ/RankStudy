@@ -8,7 +8,9 @@ Al terminar se demostrará este flujo desde la interfaz hasta la persistencia, c
 
 ## Duración y capacidad propuesta
 
-Duración: dos semanas, equivalentes a diez días laborables. Las fechas de inicio y fin se acuerdan en la planificación. Responsables y estimaciones se asignan con el equipo; no hay una velocidad histórica que permita comprometer puntos o capacidad.
+Duración: dos semanas, equivalentes a diez días laborables. Fecha de planificación: 6 de octubre de 2026. Inicio y fin quedan pendientes del calendario del equipo; no se cuentan festivos como días disponibles sin confirmación.
+
+Hipótesis de capacidad para dimensionar: una persona con 6 horas efectivas por día, 60 horas totales. Se proponen 50 horas para el backlog funcional, 6 para habilitación y documentación, y 4 de reserva. No es una velocidad observada ni un compromiso del equipo. Si la disponibilidad real es menor, recalcular antes de iniciar. Responsables nominales pendientes; los perfiles de la tabla indican quién debería asumir el trabajo.
 
 El alcance obligatorio es el registro por correo. Las opciones Google y Apple de RSY-18 y RSY-19 quedan para un sprint posterior; estas dos tareas solo se completan parcialmente en este sprint y deben conservar esa distinción en Jira.
 
@@ -68,14 +70,47 @@ Las últimas cuatro subtareas son propuestas adicionales de este sprint. La inst
 
 El equipo confirma esta secuencia tras estimar. Si la capacidad no alcanza, preservar primero el flujo de correo integrado; no declarar terminada una entrega sin su validación.
 
-## Decisiones del primer día
+## Estimación inicial y responsables
 
-- Tecnología de frontend, backend y persistencia; estructura del código y comandos para ejecutar y probar.
-- Política de contraseña, biblioteca de hash y parámetros apropiados al entorno.
-- Mecanismo de sesión y cierre de sesión, protección de cookies o tokens y contexto de autorización.
-- Proveedor de correo de pruebas, URL del enlace, TTL del token y límites de reenvío.
-- Tratamiento del email normalizado y mensajes de duplicado conforme a la política de privacidad.
-- Responsables, estimaciones y capacidad disponible.
+| Trabajo | Horas propuestas | Perfil responsable | Resultado verificable |
+| --- | --- | --- | --- |
+| Habilitación del monorepo, PostgreSQL, Mailpit y documentación | 6 | Desarrollo | Instalación, migración y arranque reproducibles |
+| RSY-9 modelo, contrato y registro transaccional | 8 | Backend | Cuenta y credenciales atómicas; unicidad del correo |
+| RSY-10 hash de contraseña | 3 | Backend | Argon2id y ausencia de secretos en la respuesta |
+| RSY-11 pruebas de registro | 5 | Backend y QA | Éxito, datos inválidos, duplicados y rollback |
+| RSY-15 correo y reenvío seguro | 6 | Backend | Correo en Mailpit, TTL y cooldown |
+| RSY-16 consumir token y verificar | 4 | Backend | Rechazo de tokens alterados, vencidos y usados |
+| RSY-17 sesión mínima y restricción PvP | 5 | Backend | 401 sin sesión; 403 sin verificar; acceso verificado |
+| RSY-18 diseño de registro por correo | 5 | Frontend | Interfaz adaptable, etiquetas, teclado y estados |
+| RSY-19 integración por correo | 6 | Frontend | Recorrido registro, confirmación y sesión |
+| RSY-20 errores y recuperación | 3 | Frontend | Errores por campo, red y envío de correo |
+| RSY-22 validación integrada | 5 | QA y desarrollo | Pruebas automatizadas y demostración del recorrido |
+| Reserva para integración y defectos | 4 | Desarrollo | No se consume como funcionalidad adicional |
+| Total | 60 | Por asignar | Confirmar capacidad antes de iniciar |
+
+Son horas de trabajo propuestas, no horas ya invertidas. Las subtareas se incluyen en la estimación de su padre y no se suman nuevamente. RSY-18 y RSY-19 solo estiman el alcance de correo.
+
+## Decisiones técnicas del Sprint 1
+
+- Monorepo npm con `apps/web` (Next.js, React, TypeScript y Tailwind CSS) y `apps/api` (NestJS y TypeScript).
+- PostgreSQL 17, consultas parametrizadas con `pg` y migración SQL transaccional. Docker Compose habilita base y correo local.
+- Contraseña de 12 a 128 caracteres, sin reglas arbitrarias de símbolos. Argon2id con 64 MiB, 3 iteraciones y paralelismo 1; calibrar consumo en el entorno de despliegue.
+- Email normalizado con trim y minúsculas. La política inicial informa duplicados para permitir recuperar el acceso mediante inicio de sesión. No se implementa recuperación de contraseña en este sprint.
+- Sesión opaca aleatoria de 256 bits, hash SHA-256 persistido, vencimiento de 7 días y cookie HttpOnly con SameSite Lax. Secure obligatorio en producción; cierre elimina la sesión del servidor.
+- Token de verificación aleatorio de 256 bits, hash SHA-256 persistido, TTL inicial de 30 minutos y un reenvío cada 60 segundos por usuario. Reenvío reemplaza el token anterior. Valores configurables.
+- Mailpit captura correos de desarrollo. Un fallo SMTP conserva la cuenta y se informa al usuario, quien puede reenviar desde su sesión. El enlace se consume mediante confirmación POST, no al abrirlo.
+- Frontend y API se consumen desde el mismo origen mediante proxy de Next.js. La API exige Origin autorizado en escrituras y limita solicitudes por IP a 30 por minuto en una instancia.
+- La ruta `/api/pvp/access` comprueba autenticación y correo verificado. No crea duelos ni implementa Socket.IO; estos pertenecen al siguiente alcance PvP.
+- Pruebas de servicio con Vitest; recorrido de navegador con Playwright. Una base dedicada permite repetir las pruebas de persistencia contra PostgreSQL real.
+
+Estas decisiones quedan adoptadas para la base inicial. La aceptación funcional y la configuración de producción corresponden al equipo antes del lanzamiento.
+
+## Pendientes de la reunión de inicio
+
+- Confirmar inicio, fin, disponibilidad real y responsables nominales.
+- Revisar las estimaciones de la tabla con quienes harán el trabajo.
+- Validar política de contraseña, normalización de email, TTL y reenvío con el responsable funcional.
+- Definir proveedor SMTP y dominio HTTPS de producción antes del despliegue.
 
 Guardar las decisiones acordadas junto al código. No colocar credenciales reales en el repositorio.
 
@@ -109,6 +144,19 @@ Crear Sprint 1 en el tablero RSY y asignar las tareas seleccionadas solo cuando 
 Para RSY-18 y RSY-19, crear o reutilizar tareas independientes para el alcance de correo si se necesita cerrar incidencias completas en este sprint, dejando las tareas originales pendientes hasta incorporar OAuth. Evitar marcar ambas como terminadas por completar solo el correo.
 
 El plan no cambia el estado ni crea el sprint automáticamente en Jira. La medida de registro menor a 60 segundos (RSY-21) se programa cuando esté definido si incluye espera de correo y cuando se evalúen las tres opciones de registro.
+
+## Entregables y seguimiento de aceptación
+
+| Entregable | Ubicación | Aceptación |
+| --- | --- | --- |
+| Interfaz de registro, sesión y verificación | `apps/web` | Revisar en escritorio y móvil y ejecutar recorrido de navegador |
+| API, sesiones y controles de acceso | `apps/api/src` | Pruebas de servicio y comprobación HTTP |
+| Modelo y migración inicial | `apps/api/migrations/001_auth.sql` | Aplicar y comprobar rollback/unicidad en PostgreSQL |
+| Entorno local | `compose.yaml` y ejemplos de variables | Arranque reproducible de PostgreSQL y Mailpit |
+| Contrato HTTP | `docs/API.md` | Frontend y pruebas usan las rutas documentadas |
+| Evidencia de validación | `docs/sprints/VALIDACION-SPRINT-1.md` | Revisar resultados y límites antes de cerrar |
+
+Estado del sprint: base implementada para revisión. Su cierre requiere demostración y aceptación del equipo; la existencia del código no sustituye esa aceptación.
 
 ## Continuidad propuesta
 
