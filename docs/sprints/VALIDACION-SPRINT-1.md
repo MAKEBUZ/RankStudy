@@ -1,4 +1,6 @@
-# Validación del Sprint 1
+# Validación del incremento de registro del Sprint 1
+
+Esta evidencia corresponde al alcance de registro por correo implementado antes de reorganizar el backlog en cuatro sprints. No acredita el cierre del Sprint 1 ampliado ni de OAuth, perfil, contenido y calibración.
 
 Fecha: 6 de octubre de 2026. Entorno: Windows, Node.js 22.19, PostgreSQL 17.10 portable, Chromium de Playwright y buzón SMTP local.
 
@@ -36,3 +38,8 @@ Docker Compose está configurado, pero su motor no terminó de estar disponible 
 La revisión de teclado y tamaños de pantalla no constituye una auditoría completa de accesibilidad. La CI está configurada, pero su ejecución en GitHub requiere publicar los cambios y revisar el resultado del workflow.
 
 La aceptación del equipo, la asignación de personas, las fechas definitivas y la actualización de Jira siguen pendientes. No se han probado SMTP de producción, despliegue HTTPS, OAuth ni duelos reales; están fuera del alcance entregado.
+
+
+## Ampliación posterior del Sprint 1
+
+Tras reorganizar el proyecto en cuatro sprints, se implementaron perfil, avatares, banco, moderación, calibración e integración OAuth. La validación actual comprende 30 pruebas con PostgreSQL y 5 recorridos de navegador. Consultar [estado y evidencia ampliados](ESTADO-SPRINT-1.md). Los resultados anteriores se conservan como evidencia del incremento de registro.

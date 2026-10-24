@@ -2,6 +2,7 @@ name: rankstudy
 services:
   postgres:
     image: postgres:17-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: rankstudy
       POSTGRES_PASSWORD: rankstudy_local
@@ -17,6 +18,7 @@ services:
       retries: 20
   mailpit:
     image: axllent/mailpit:v1.27
+    restart: unless-stopped
     ports:
       - "127.0.0.1:1025:1025"
       - "127.0.0.1:8025:8025"

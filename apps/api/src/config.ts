@@ -13,7 +13,10 @@ export const config = z.object({
   VERIFICATION_TTL_MINUTES: z.coerce.number().int().positive().default(30),
   RESEND_COOLDOWN_SECONDS: z.coerce.number().int().positive().default(60),
   SESSION_TTL_DAYS: z.coerce.number().int().positive().default(7),
+  MATCH_INITIAL_RANGE: z.coerce.number().int().min(25).max(400).default(100),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  GOOGLE_CLIENT_ID: z.string().optional(), GOOGLE_CLIENT_SECRET: z.string().optional(),
+  APPLE_CLIENT_ID: z.string().optional(), APPLE_TEAM_ID: z.string().optional(), APPLE_KEY_ID: z.string().optional(), APPLE_PRIVATE_KEY: z.string().optional(),
 }).parse(process.env);
 if (config.NODE_ENV === 'production' && !config.WEB_ORIGIN.startsWith('https://')) {
   throw new Error('WEB_ORIGIN debe usar HTTPS en producción.');

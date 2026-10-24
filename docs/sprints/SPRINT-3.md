@@ -1,146 +1,174 @@
-# Sprint 3 Preferencias académicas y avatar inicial
+# Sprint 3: Torneos, recompensas y cursos
 
-Guardar nivel educativo, materias y avatar gratuito desde un onboarding que puede retomarse.
+## Objetivo
 
-Estado: plan propuesto, pendiente de estimación y aceptación del equipo. La planificación no implica implementación ni cierre en Jira.
+La plataforma ofrece juego grupal y torneos, recompensas y tienda virtual, y cursos con acceso controlado.
 
-## Entrada y dependencias
+## Capacidad y alcance
 
-Requiere las entregas aceptadas de [Sprint 1](SPRINT-1.md). Revisar contratos, migraciones y criterios de las tareas antes de comprometer el sprint.
+Propuesta de dos semanas, sin fechas ni responsables nominales confirmados. 27 tareas originales; 300 h de entrega, 36 h de integración y documentación, 24 h de reserva: **360 h totales**. Equivale aritméticamente a 6 personas con 60 h efectivas por sprint; las dependencias y especialidades deben validarse antes de comprometer el alcance. Las horas de subtareas ya están incluidas en su padre.
 
-## Duración y capacidad
+Entrada: aceptar las entregas requeridas de los sprints anteriores y confirmar capacidad y servicios externos.
 
-Dos semanas o diez días laborables efectivos. Hipótesis: una persona con 6 horas efectivas diarias, 60 horas en total. Se proponen 50 horas de entrega, 6 de integración, documentación y revisión, y 4 de reserva para defectos. Las pruebas específicas de cada tarea están incluidas en sus horas; la integración valida el conjunto.
+## Backlog y estimaciones
 
-Fechas y responsables nominales por confirmar. Los perfiles no representan personas asignadas. Las estimaciones son hipótesis de esfuerzo y no horas ya invertidas; reestimar tras conocer la velocidad y el alcance definitivo.
+| Incidencia | Entrega | Horas propuestas |
+| --- | --- | --- |
+| RSY-53 | Implementar sincronización de preguntas para todos los jugadores | 14 |
+| RSY-54 | Implementar eliminación progresiva o ranking final | 10 |
+| RSY-55 | Construir sala de espera con lista de jugadores | 10 |
+| RSY-56 | Construir tabla de resultados en tiempo real | 8 |
+| RSY-57 | Probar con el número máximo de jugadores simultáneos definido | 8 |
+| RSY-110 | Implementar registro al torneo con control de cupo | 16 |
+| RSY-111 | Implementar lógica de bracket o tabla de resultados | 18 |
+| RSY-112 | Construir pantalla de inscripción y visualización del torneo en curso | 16 |
+| RSY-103 | Implementar generación automática diaria/semanal | 9 |
+| RSY-104 | Garantizar mínimo 3 misiones activas simultáneas | 5 |
+| RSY-105 | Implementar entrega de monedas al completar misión | 9 |
+| RSY-106 | Construir listado de misiones activas con progreso | 7 |
+| RSY-107 | Implementar lógica de incremento/reinicio diario de racha | 8 |
+| RSY-108 | Programar notificación antes de perder la racha | 7 |
+| RSY-109 | Mostrar racha actual en el perfil | 5 |
+| RSY-73 | Implementar job mensual de cierre de temporada | 18 |
+| RSY-74 | Definir tabla de recompensas por rango alcanzado | 8 |
+| RSY-75 | Implementar entrega automática de recompensas | 16 |
+| RSY-76 | Construir pantalla de resumen con rango y recompensa obtenida | 8 |
+| RSY-120 | Cargar mínimo 10 ítems cosméticos con precio | 10 |
+| RSY-121 | Construir vitrina con vista previa antes de comprar | 12 |
+| RSY-122 | Implementar lógica de compra y aplicación del cosmético | 18 |
+| RSY-123 | Definir esquema de curso, docente responsable y estudiantes | 12 |
+| RSY-124 | Implementar carga vía CSV | 12 |
+| RSY-125 | Implementar enlace de invitación autogenerado | 7 |
+| RSY-126 | Construir panel de gestión de cursos para administradores | 11 |
+| RSY-127 | Implementar ranking interno visible solo dentro del curso | 8 |
+| PL-S3-01 | Reconciliar movimientos de monedero e inventario y probar fallos de compra | 10 |
 
-## Backlog y esfuerzo propuesto
+Las referencias PL son propuestas locales, sin clave Jira asignada. RSY-18 y RSY-19 incluyen aquí la suma del tramo de correo y el de OAuth; no se duplican como incidencias.
 
-| Incidencia | Trabajo | Horas | Perfil responsable |
-| --- | --- | --- | --- |
-| RSY-23 | Definir tabla de niveles educativos (secundaria/universidad/oposición) | 4 | Backend |
-| RSY-24 | Definir catálogo de materias predefinidas | 5 | Backend |
-| RSY-25 | Construir selector de nivel (single-select) | 4 | Frontend |
-| RSY-26 | Construir selector de materias (multi-select) | 5 | Frontend |
-| RSY-27 | Implementar PATCH de perfil para actualizar nivel/materias | 8 | Backend |
-| RSY-29 | Diseñar al menos 6 combinaciones gratuitas | 6 | Diseño y frontend |
-| RSY-30 | Exportar assets optimizados para web/móvil | 4 | Diseño y frontend |
-| RSY-31 | Construir carrusel/selector de combinaciones | 6 | Frontend |
-| RSY-32 | Guardar selección al finalizar onboarding | 4 | Frontend |
-| RSY-33 | Agregar campo de avatar al modelo de usuario | 4 | Backend |
-| Transversal | Integración, documentación, revisión y retrospectiva | 6 | Desarrollo y QA |
-| Reserva | Corrección de defectos e incertidumbre | 4 | Desarrollo |
-| Total | Capacidad propuesta | 60 | Por asignar |
+## Secuencia y criterios de aceptación
+
+### 1. Duelos grupales
+
+Jugar partidas con varios participantes desde un lobby hasta una clasificación final consistente.
+
+Decisiones antes de iniciar: Cupo máximo; modo eliminación o ranking final; desempates, abandono y política ELO grupal. Por defecto no usar la fórmula 1v1 sin validarla.
+
+- Lobby controla cupo y participantes; pregunta y plazo son comunes y autorizados.
+- Modo elegido tiene regla explícita de eliminación o resultado final y desempates.
+- Tabla en vivo coincide con servidor y no duplica jugadores ni puntajes al reconectar.
+- Prueba al máximo acordado y por encima del cupo verifica rendimiento y rechazo del excedente.
+- El ELO grupal queda desactivado salvo regla académica aprobada y probada; no se reutiliza accidentalmente el cierre 1v1.
+
+Demostración: Llenar la sala, rechazar una entrada extra, jugar, reconectar un cliente y mostrar un cierre único.
+
+Riesgo: El cupo afecta arquitectura y prueba; fijarlo antes de implementar, y no declarar escalabilidad sin evidencia.
+
+Ajuste si falta capacidad: Entregar un solo modo aprobado; el segundo se replanifica si no cabe.
+
+### 2. Torneos y seguimiento en vivo
+
+Inscribir participantes con cupo y ejecutar un torneo con fases y resultados visibles.
+
+Decisiones antes de iniciar: Bracket o tabla, reglas para participantes impares, ausencias, desempate y registro/cierre; modalidad de juego 1v1 o grupal.
+
+- Inscripción reserva cupo atómicamente; solicitudes repetidas o simultáneas por última plaza no exceden el máximo.
+- Elegir un formato aprobado y documentar avance, empates y ausencias; reejecución no reconstruye resultados distintos.
+- La UI muestra inscripción propia, cupo y fase actual con actualizaciones autorizadas.
+- Inicio, avance y finalización producen resultados únicos y auditables.
+
+Demostración: Inscribir usuarios, competir por el último cupo, iniciar torneo, completar fases y consultar resultado final.
+
+Riesgo: Bracket y ranking son formatos distintos; no comprometer ambos con 18 h sin una nueva estimación.
+
+Ajuste si falta capacidad: Seleccionar un único formato de torneo; mantener el flujo completo.
+
+### 3. Misiones monedas y rachas
+
+Mantener misiones activas y rachas y acreditar monedas por progreso verificado.
+
+Decisiones antes de iniciar: Actividades válidas, zona horaria y día de corte; catálogo de misiones; reglas de saldo; consentimiento y canal de recordatorios.
+
+- Generación diaria/semanal idempotente mantiene al menos tres misiones activas y con vigencia.
+- Monedas se acreditan una sola vez por misión mediante transacción y registro de movimientos.
+- Racha aumenta a lo sumo una vez por día válido y se reinicia conforme al corte aprobado.
+- Recordatorio push respeta consentimiento y horario silencioso, no se duplica; gestionar permiso denegado y suscripción vencida.
+- Pantallas muestran progreso y saldo reales. La habilitación Web Push y sus credenciales están incluidas en RSY-108.
+
+Demostración: Completar misión, repetir evento sin duplicar monedas y simular cambio de día con y sin actividad.
+
+Riesgo: Push añade configuración de navegador y servicio. Sin entrega comprobada en el navegador soportado, RSY-108 queda pendiente.
+
+Ajuste si falta capacidad: Posponer recordatorio push si su habilitación consume capacidad; registrar RSY-108 como arrastre explícito.
+
+### 4. Temporadas y recompensas
+
+Cerrar temporadas mensuales con reinicio parcial y entrega única de recompensas.
+
+Decisiones antes de iniciar: Calendario y zona horaria; fórmula de reinicio; tabla de recompensas por rango y elegibilidad; tratamiento de duelos que cruzan el cierre.
+
+- Job mensual guarda checkpoint y permite recuperación; reejecución no reinicia ELO ni entrega premios dos veces.
+- Recompensas aprobadas usan monedas ya existentes; cosméticos de temporada solo se habilitan tras disponer del catálogo.
+- Cierre coordina con duelos en curso y conserva historial antes/después.
+- Resumen muestra rango final y recompensa realmente otorgada, con tratamiento de errores.
+
+Demostración: Simular cierre, interrumpir una entrega y reanudar; verificar exactamente un premio por usuario/temporada.
+
+Riesgo: Cruce de partidas con cierre y fallos parciales; definir corte transaccional y probar recuperación antes de programar cron real.
+
+Ajuste si falta capacidad: Reducir variedad de recompensas, sin recortar recuperación o historial.
+
+### 5. Tienda y propiedad de cosméticos
+
+Comprar y aplicar cosméticos usando monedas virtuales con inventario consistente.
+
+Decisiones antes de iniciar: Al menos diez ítems, precios en moneda virtual y licencias; política de propiedad/duplicados; relación entre combinaciones y cosméticos.
+
+- Catálogo contiene al menos diez ítems con precio y referencia estable; vista previa coincide con la aplicación.
+- Servidor valida precio, saldo y propiedad; débito y entrega son atómicos e idempotentes.
+- No puede aplicarse un ítem ajeno ni producir saldo negativo mediante compras concurrentes.
+- Movimientos del monedero e inventario se reconcilian. La moneda virtual no implica compra con dinero real en este sprint.
+
+Demostración: Comprar, repetir solicitud, simular fallo de persistencia y aplicar un cosmético propio sin afectar otra cuenta.
+
+Riesgo: Confundir moneda virtual con pagos reales ampliaría el alcance. Pagos de Plus se planifican en Sprints 21 y 22.
+
+Ajuste si falta capacidad: Reducir efectos visuales y filtros; mantener diez ítems, atomicidad y propiedad.
+
+### 6. Cursos e instituciones
+
+Gestionar cursos, docentes y estudiantes con aislamiento entre instituciones.
+
+Decisiones antes de iniciar: Roles administrativos/docentes, pertenencia y revocación; columnas CSV; importación parcial o atómica; TTL y usos de invitación.
+
+- Modelo de institución/curso aplica matriz de permisos y prueba accesos cruzados por ID.
+- Carga CSV tiene prevalidación, errores por fila y reintento sin duplicar estudiantes o membresías; no asigna privilegios por columnas manipuladas.
+- Invitación liga al curso, vence y puede revocarse; no concede rol docente.
+- Panel y ranking de curso solo son visibles a usuarios autorizados; retirar membresía corta acceso.
+
+Demostración: Crear dos instituciones, importar estudiantes, invitar a un curso y demostrar rechazo de acceso desde la otra institución.
+
+Riesgo: Modelo institucional y grupos sociales no son equivalentes; reutilizar utilidades sin confundir límites de acceso.
+
+Ajuste si falta capacidad: Limitar tamaño de lote del piloto, sin omitir prevalidación y aislamiento.
+
+## Organización de las dos semanas
+
+Días 1 y 2: confirmar decisiones, contratos, datos y permisos; distribuir paquetes según dependencias. Días 3 a 7: implementar y validar incrementos en el orden indicado, permitiendo trabajo paralelo cuando no dependa de otro paquete. Días 8 y 9: integrar recorridos y resolver defectos. Día 10: demostrar criterios, revisar resultados y registrar retrospectiva. Esta secuencia es una hipótesis a contrastar con el equipo.
 
 ## Subtareas asociadas
 
-| Padre | Subtarea existente propuesta |
+| Padre | Subtarea del backlog |
 | --- | --- |
-| RSY-27 | Versionar contrato de preferencias para los consumidores |
+| RSY-73 | Definir calendario y recuperación del cierre de temporada |
+| RSY-107 | Acordar día de corte y actividad que mantiene racha |
+| RSY-110 | Probar inscripción concurrente al último cupo |
+| RSY-122 | Probar atomicidad de compra y propiedad del cosmético |
+| RSY-123 | Definir matriz de roles y aislamiento institucional |
+| RSY-124 | Agregar prevalidación y reporte de errores de carga masiva |
+| RSY-125 | Gestionar revocación y vencimiento de invitaciones de curso |
 
-Reutilizar por título y padre si estas subtareas ya fueron importadas. Sus claves nuevas no se conocen en el CSV de origen. Están incluidas en las horas del padre y no suman capacidad adicional.
+Reutilizar las subtareas ya importadas y sus claves asignadas. Desglosar cada tarea adicional PL en contrato/datos, implementación y validación dentro de sus horas, sin duplicar estimaciones.
 
-## Criterios de aceptación del incremento
+## Condición de cierre
 
-1. Un nivel y varias materias compatibles se validan en servidor y persisten tras recarga.
-2. PATCH modifica solo el perfil propio y devuelve errores concretos para IDs inválidos o inactivos.
-3. Al menos seis combinaciones gratuitas tienen referencia estable, assets optimizados y selección accesible por teclado y móvil.
-4. RSY-28 se acepta en Sprint 6 al existir matchmaking; RSY-34 se programa en Sprint 11 cuando perfil, duelo y ranking estén disponibles.
-
-## Criterios de las tareas originales
-
-### RSY-23
-
-- Catálogo incluye secundaria, universidad y oposición.
-- IDs estables y estado activo.
-- Cambios no invalidan perfiles previos.
-
-### RSY-24
-
-- Cada materia tiene ID único y niveles compatibles.
-- No se muestran materias inactivas.
-- Evitar duplicados.
-
-### RSY-25
-
-- Solo un nivel seleccionable.
-- Validación de selección requerida.
-- Valor se conserva al navegar.
-
-### RSY-26
-
-- Permitir múltiples materias compatibles con el nivel.
-- Rechazar IDs inválidos.
-- Conservar selecciones al volver.
-
-### RSY-27
-
-- Actualizar solo perfil propio.
-- Validar nivel y materias conjuntamente.
-- Respuesta devuelve preferencias persistidas.
-
-### RSY-29
-
-- Entregar al menos 6 combinaciones gratuitas identificadas.
-- Licencia de uso registrada.
-- Diseño consistente en tamaños pequeños.
-
-### RSY-30
-
-- Assets con dimensiones y peso documentados.
-- Transparencia correcta.
-- Comprobar visualización en web y móvil.
-
-### RSY-31
-
-- Mostrar combinaciones disponibles y selección actual.
-- Interacción táctil y teclado.
-- Vista previa coincide con catálogo.
-
-### RSY-32
-
-- Persistir avatar seleccionado en perfil propio.
-- Recarga conserva elección.
-- Error ofrece reintento.
-
-### RSY-33
-
-- Guardar referencia estable al catálogo.
-- Migrar perfiles existentes con avatar por defecto.
-- Rechazar cosméticos no disponibles.
-
-## Decisiones antes de iniciar
-
-Catálogo inicial y relación nivel/materia; obligatoriedad de selecciones; seis combinaciones de avatar y licencias de los assets.
-
-Confirmar además disponibilidad del equipo, acceso a servicios y dataset de prueba. Reabrir la estimación si una decisión cambia el alcance.
-
-## Secuencia de trabajo
-
-| Días | Trabajo | Evidencia |
-| --- | --- | --- |
-| 1 y 2 | Resolver decisiones, revisar contratos y preparar datos; empezar las dependencias de backend | Contratos y reglas revisados |
-| 3 a 5 | Implementar dominio, persistencia y controles; desarrollar interfaz contra el contrato | Tareas de dominio verificables |
-| 6 a 8 | Conectar interfaz, servicios y consumidores; ejecutar pruebas específicas | Incremento integrado y escenarios negativos |
-| 9 | Ejecutar recorrido completo y corregir bloqueantes | Evidencia de aceptación |
-| 10 | Demostrar, revisar aceptación, registrar arrastres y retrospectiva | Cierre o pendientes explícitos |
-
-Es una secuencia de actividades, no trabajo simultáneo atribuido a una sola persona. Con varios perfiles se puede coordinar en paralelo sin multiplicar capacidad sin confirmación.
-
-## Riesgo principal y ajuste de alcance
-
-Catálogos o assets sin aprobación pueden bloquear la experiencia; usar un conjunto pequeño aprobado sin inventar materias como definitivas.
-
-Si la capacidad no alcanza: Reducir variedad de materias manteniendo un catálogo compatible; no recortar las seis combinaciones exigidas por RSY-29.
-
-## Demostración de cierre
-
-Completar onboarding, volver a entrar, cambiar preferencias y verificar persistencia y rechazo de una materia incompatible.
-
-Adjuntar resultados de pruebas y escenarios fallidos relevantes; no marcar terminado un ítem sin su criterio completo. Aplicar la [definición común de terminado](PLAN-GENERAL.md#definicion-comun-de-terminado).
-
-## Seguimiento en Jira
-
-Agrupar bajo las épicas originales, asignar tareas al sprint y mantener subtareas ligadas al padre. No añadir épicas como trabajo ejecutable. Las dependencias propuestas son referencias para refinar, no enlaces Blocks creados automáticamente.
-
-Las tareas que se pospongan conservan estado pendiente y se reasignan tras revisar capacidad. Ningún archivo de este plan cambia el tablero ni crea sprints en Jira.
+Aceptar los criterios de cada paquete y adjuntar evidencia; pruebas pertinentes aprobadas, permisos verificados en servidor, interfaz accesible y documentación actualizada. Resolver defectos bloqueantes. Los recortes se registran como pendientes y desplazan sus dependientes; no se declara completo un sprint por crear este documento.

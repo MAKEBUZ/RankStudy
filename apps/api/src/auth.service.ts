@@ -14,7 +14,7 @@ const registerSchema = z.object({
   password: z.string().min(12, 'Usa al menos 12 caracteres.').max(128, 'Máximo 128 caracteres.'),
 }).strict();
 const loginSchema = z.object({ email: emailSchema, password: z.string().min(1).max(128) }).strict();
-type User = { id: string; name: string; email: string; email_verified_at: Date | null };
+type User = { id: string; name: string; email: string; email_verified_at: Date | null; role?: string };
 export const publicUser = (u: User) => ({ id: u.id, name: u.name, email: u.email, verified: !!u.email_verified_at });
 
 @Injectable()
@@ -96,6 +96,6 @@ export class AuthService {
   async pvp(session?: string) {
     const user = await this.current(session);
     if (!user.email_verified_at) throw new ForbiddenException('Verifica tu correo antes de acceder a los duelos.');
-    return { allowed: true, message: 'Cuenta verificada. El modo de duelos estará disponible en un próximo sprint.' };
+    return { allowed: true, message: 'Cuenta verificada. Entra a competir para buscar rival o enviar un reto.' };
   }
 }

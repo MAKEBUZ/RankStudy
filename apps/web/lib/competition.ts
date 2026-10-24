@@ -1,0 +1,13 @@
+export type Rank={id:string;name:string;min:number;badge:string;color:string};
+export type Player={id:string;name:string;avatar:string;score:number;eloBefore:number;eloAfter:number|null;rank:Rank;connected:boolean};
+export type Duel={id:string;subjectId:string;status:string;roundIndex:number;total:number;deadline:string;winnerId:string|null;finishReason:string|null;players:Player[];yourAnswer:number|null;question:{id:string;version:number;prompt:string;options:string[]}|null};
+export type GameState={serverTime:number;queue:{state:string;subject_id:string;expires_at:string;range:number}|null;duel:Duel|null;ranks:Rank[];settings:{rounds:number;roundMs:number;reconnectMs:number;queueMs:number}};
+export type Group={id:string;name:string;owner_id:string;members:number};
+export type Review={roundIndex:number;questionId:string;version:number;prompt:string;options:string[];topic:string;correctIndex:number;explanation:string;yourAnswer:number|null;saved:boolean};
+export type Topic={topic:string;total:number;correct:number;wrong:number;errorRate:number;reason?:string};
+export type Stats={elo:number|null;rank:Rank|null;country:string|null;days:number;summary:{played:number;wins:number;interrupted:number};history:{duel_id:string;before:number;after:number;created_at:string}[];topics:Topic[];recommendations:Topic[]};
+export type DuelHistory={id:string;subject_id:string;winner_id:string|null;finish_reason:string;finished_at:string;score:number;elo_before:number;elo_after:number};
+export type Notice={id:string;kind:string;message:string;reference_id:string;read_at:string|null;created_at:string};
+export type Inbox={id:string;subject_id:string;expires_at:string;sender_name:string};
+export type Person={id:string;name:string;avatar:string};
+export type Ranking={rows:(Person&{elo:number;position:number;rank:Rank;total:number})[];page:number;pageSize:number;updatedAt:string};

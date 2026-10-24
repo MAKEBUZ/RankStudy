@@ -1,133 +1,173 @@
-# Sprint 4 Banco académico y moderación docente
+# Sprint 4: Herramientas docentes, IA, Plus y lanzamiento
 
-Disponer de preguntas aprobadas y versionadas y un flujo docente con revisión administrativa.
+## Objetivo
 
-Estado: plan propuesto, pendiente de estimación y aceptación del equipo. La planificación no implica implementación ni cierre en Jira.
+Los docentes gestionan bancos y torneos de aula; IA y Plus funcionan con controles y el candidato de lanzamiento puede operarse y recuperarse.
 
-## Entrada y dependencias
+## Capacidad y alcance
 
-Requiere las entregas aceptadas de [Sprint 1](SPRINT-1.md), [Sprint 3](SPRINT-3.md). Revisar contratos, migraciones y criterios de las tareas antes de comprometer el sprint.
+El alcance se amplía con [materiales personales, estudio con IA y aprobación en dos instancias](../ESTUDIO-CON-IA.md). El módulo debe admitir estudiantes además de docentes. Las tareas IA-01 a IA-08 definen entregas y criterios; las que extienden tareas originales se integran en ellas para evitar duplicados. Las horas de la línea base que sigue deben reestimarse antes de comprometer esta ampliación.
 
-## Duración y capacidad
+Propuesta de dos semanas, sin fechas ni responsables nominales confirmados. 20 tareas originales; 300 h de entrega, 36 h de integración y documentación, 24 h de reserva: **360 h totales**. Equivale aritméticamente a 6 personas con 60 h efectivas por sprint; las dependencias y especialidades deben validarse antes de comprometer el alcance. Las horas de subtareas ya están incluidas en su padre.
 
-Dos semanas o diez días laborables efectivos. Hipótesis: una persona con 6 horas efectivas diarias, 60 horas en total. Se proponen 50 horas de entrega, 6 de integración, documentación y revisión, y 4 de reserva para defectos. Las pruebas específicas de cada tarea están incluidas en sus horas; la integración valida el conjunto.
+Entrada: aceptar las entregas requeridas de los sprints anteriores y confirmar capacidad y servicios externos.
 
-Fechas y responsables nominales por confirmar. Los perfiles no representan personas asignadas. Las estimaciones son hipótesis de esfuerzo y no horas ya invertidas; reestimar tras conocer la velocidad y el alcance definitivo.
+## Backlog y estimaciones
 
-## Backlog y esfuerzo propuesto
+| Incidencia | Entrega | Horas propuestas |
+| --- | --- | --- |
+| RSY-128 | Implementar selector entre banco propio o público | 9 |
+| RSY-129 | Filtrar preguntas de duelo según banco asignado al curso | 10 |
+| RSY-130 | Construir UI del selector en el panel institucional | 7 |
+| RSY-98 | Implementar exportación a CSV y PDF por curso/grupo | 16 |
+| RSY-99 | Construir filtro de rango de fechas y botón de exportar | 8 |
+| RSY-131 | Implementar inicio y cierre de torneo controlado por el docente | 18 |
+| RSY-132 | Construir vista de resultados en tiempo real para pantalla grande | 16 |
+| RSY-133 | Simular un torneo de aula completo de principio a fin | 16 |
+| RSY-89 | Definir prompt de generación de preguntas de opción múltiple | 8 |
+| RSY-90 | Implementar llamada a la API y parseo de la respuesta | 13 |
+| RSY-91 | Implementar extracción de texto desde PDF | 11 |
+| RSY-92 | Construir UI de edición/aprobación de las preguntas generadas | 10 |
+| RSY-93 | Revisar muestra de preguntas generadas por materia | 8 |
+| RSY-113 | Implementar límite configurable (ej. 5/día) por usuario gratuito | 12 |
+| RSY-114 | Mostrar mensaje con CTA de upgrade al alcanzar el límite | 7 |
+| RSY-115 | Integrar procesador de pago (tarjeta/plataforma móvil) | 20 |
+| RSY-117 | Construir pantalla de checkout | 11 |
+| RSY-116 | Implementar activación inmediata tras confirmación de pago | 14 |
+| RSY-118 | Construir pantalla de gestión/cancelación de suscripción | 18 |
+| RSY-119 | Probar pagos exitosos, fallidos y reembolsos en sandbox | 18 |
+| PL-S4-01 | Recuperación de contraseña con token de un solo uso y revocación de sesiones | 12 |
+| PL-S4-02 | Entorno de staging con HTTPS y configuración de secretos | 10 |
+| PL-S4-03 | Backup y prueba de restauración de PostgreSQL | 8 |
+| PL-S4-04 | Regresión de recorridos completos y corrección de bloqueantes | 12 |
+| PL-S4-05 | Guía operativa y limpieza programada de sesiones y tokens vencidos | 8 |
 
-| Incidencia | Trabajo | Horas | Perfil responsable |
-| --- | --- | --- | --- |
-| RSY-81 | Definir esquema (materia, tema, dificultad, opciones, respuesta) | 7 | Backend |
-| RSY-82 | Construir formulario de carga y edición de preguntas | 8 | Frontend |
-| RSY-83 | Bloquear guardado si falta materia, tema o dificultad | 4 | Backend |
-| RSY-84 | Curar y cargar el set inicial de preguntas por materia | 7 | Contenido y revisión académica |
-| RSY-85 | Definir flujo de verificación (documento/institución) | 6 | Backend |
-| RSY-86 | Implementar estados pendiente/aprobado/rechazado | 7 | Backend |
-| RSY-87 | Construir formulario de carga para docentes | 5 | Frontend |
-| RSY-88 | Construir panel de moderación para administradores | 6 | Frontend |
-| Transversal | Integración, documentación, revisión y retrospectiva | 6 | Desarrollo y QA |
-| Reserva | Corrección de defectos e incertidumbre | 4 | Desarrollo |
-| Total | Capacidad propuesta | 60 | Por asignar |
+Las referencias PL son propuestas locales, sin clave Jira asignada. RSY-18 y RSY-19 incluyen aquí la suma del tramo de correo y el de OAuth; no se duplican como incidencias.
+
+## Secuencia y criterios de aceptación
+
+### 1. Bancos por curso y reportes
+
+Asignar bancos autorizados a cursos y exportar desempeño filtrado en CSV y PDF.
+
+Decisiones antes de iniciar: Propiedad del banco institucional y visibilidad pública; mínimo de preguntas; intervalos y zona horaria de reportes; campos de exportación.
+
+- Curso selecciona banco propio o público autorizado; banco sin preguntas suficientes impide iniciar partida con motivo visible.
+- Duelo fija banco/versiones al iniciar; cambio posterior no altera partida activa ni mezcla instituciones.
+- CSV y PDF coinciden en fechas, materias y totales; filtros inclusivos/exclusivos se documentan.
+- Docente solo exporta cursos permitidos; textos CSV se neutralizan frente a fórmulas de hoja de cálculo.
+
+Demostración: Asignar banco propio, jugar con su contenido y exportar un periodo; comparar totales y rechazar curso ajeno.
+
+Riesgo: RSY-129 necesita contexto de curso en la sesión de duelo; incluirlo en el contrato y en las pruebas de aislamiento.
+
+Ajuste si falta capacidad: Simplificar diseño del PDF; conservar ambos formatos y filtros funcionales.
+
+### 2. Torneo de aula y proyección
+
+Permitir al docente ejecutar un torneo de aula y proyectar resultados en vivo.
+
+Decisiones antes de iniciar: Modalidad, cupo, quién inicia/cierra y nombres visibles en proyección; control de desconexión de la pantalla.
+
+- Solo docente autorizado controla inicio/cierre; se valida banco, curso, cupo e inscripciones.
+- Proyección está autorizada y respeta visibilidad aprobada; no ofrece acceso público por URL predecible.
+- Reconexión recupera snapshot sin filas ni puntos repetidos.
+- Simulación completa incluye docente, estudiantes, preguntas, resultados y cierre único.
+
+Demostración: Ejecutar torneo de aula completo, desconectar proyección, reconectar y cerrar con resumen consistente.
+
+Riesgo: La pantalla compartida puede revelar nombres fuera del curso; aplicar la política de visibilidad antes de la demostración.
+
+Ajuste si falta capacidad: Limitar variedad de vistas para pantalla grande; mantener el flujo completo y recuperación.
+
+### 3. Generación de preguntas desde apuntes
+
+Crear borradores de preguntas desde texto o PDF para revisión docente antes de publicar.
+
+Decisiones antes de iniciar: Proveedor y modelo, presupuesto y cuotas; tamaño/páginas de PDF; tratamiento de PDF escaneado; rúbrica académica y uso de apuntes autorizados.
+
+- Entrada es contenido, no instrucciones ejecutables; salida se valida por esquema y reglas académicas.
+- Timeout, fallos, límites y gasto están controlados; no se exponen credenciales ni documentos entre usuarios.
+- Extracción valida tipo, tamaño y texto legible y elimina temporales; PDF sin texto informa limitación de OCR.
+- Preguntas siempre quedan pendientes hasta revisión humana; la muestra por materia se evalúa con rúbrica y criterios aprobados.
+
+Demostración: Subir texto y PDF, revisar y corregir una pregunta, aprobarla al banco autorizado y rechazar un archivo inválido.
+
+Riesgo: La generación puede producir respuestas erróneas; la revisión académica es parte de la entrega, no una tarea opcional posterior.
+
+Ajuste si falta capacidad: Entregar PDF con texto seleccionable; OCR se excluye y se registra como evolución propuesta.
+
+### 4. Cuota gratuita y checkout de Plus
+
+Aplicar cuota gratuita y crear pagos de suscripción en sandbox sin activar beneficios por acciones del cliente.
+
+Decisiones antes de iniciar: Proveedor y entorno sandbox; precio, moneda, impuestos y condiciones comerciales por aprobar; qué duelo consume cuota y cuándo se devuelve.
+
+- Cuota diaria configurable se consume atómicamente en servidor y tiene zona horaria definida; concurrencia no supera el límite.
+- UI comunica agotamiento y renovación; CTA abre checkout con precio y moneda aprobados.
+- Servidor determina importe y valida firma de webhooks, IDs de evento y estados duplicados/desordenados.
+- Se persiste estado del pago. Activación, cancelación y reembolso se completan en Sprint 4; no se habilita cobro público todavía.
+
+Demostración: Agotar cuota con solicitudes simultáneas y crear un pago sandbox; comprobar rechazo de webhook sin firma.
+
+Riesgo: Un checkout sin ciclo de suscripción completo no debe usarse con dinero real; mantener sandbox hasta aceptar Sprint 4.
+
+Ajuste si falta capacidad: Elegir un único proveedor y canal web; integración específica de tiendas móviles queda pendiente de confirmación de alcance.
+
+### 5. Ciclo de suscripción y pruebas de pago
+
+Activar, mantener y cancelar Plus según el estado verificado del proveedor y probar reembolsos.
+
+Decisiones antes de iniciar: Vigencia al cancelar, renovación, impago, reembolso y revocación de beneficios; reconciliación con proveedor; política comercial aprobada.
+
+- Activación ocurre tras confirmación autenticada del proveedor, una sola vez; pago fallido no concede beneficios.
+- Reconciliar eventos fuera de orden con estado del proveedor; renovación e impago no dejan permisos incoherentes.
+- UI muestra plan, próximo cobro, cancelación y fecha efectiva de fin de beneficios.
+- Sandbox cubre éxito, fallo, duplicados, reembolso, cancelación y reintento; sin transacciones reales.
+
+Demostración: Pagar en sandbox, activar Plus, repetir webhook, cancelar y reembolsar y comprobar permisos y cuota resultantes.
+
+Riesgo: El proveedor entrega eventos repetidos y no siempre ordenados; persistir IDs y registrar fallos recuperables.
+
+Ajuste si falta capacidad: No recortar casos de pago; replanificar el sprint si no cabe la validación del ciclo completo.
+
+### 6. Preparación de lanzamiento
+
+Preparar un candidato de lanzamiento que pueda operarse, recuperarse y validarse en staging.
+
+Decisiones antes de iniciar: Alcance del lanzamiento; hosting, dominio y SMTP; objetivos operativos, responsables de soporte y criterios de rollback.
+
+- Recuperación no permite enumerar cuentas y usa enlace temporal de un solo uso; cambiar contraseña revoca sesiones según política definida.
+- Staging usa HTTPS y servicios reales de prueba; secretos fuera de Git y cookies Secure verificadas.
+- Backup restaurado en base aislada y procedimiento de rollback demostrado.
+- Recorridos aceptados pasan regresión; bloqueantes corregidos; documentación permite arranque y recuperación por otra persona.
+- Publicar producción requiere decisión explícita del responsable; este plan no autoriza despliegues ni cobros reales.
+
+Demostración: Recuperar una cuenta, restaurar backup en entorno aislado y ejecutar el recorrido integrado sobre staging.
+
+Riesgo: Estas son tareas adicionales propuestas y aún no tienen clave Jira. Si despliegue o correcciones superan el presupuesto, reestimar antes de fijar fecha de lanzamiento.
+
+Ajuste si falta capacidad: Reducir alcance del lanzamiento manteniendo integridad de datos y recuperación; no usar la reserva para agregar funciones.
+
+## Organización de las dos semanas
+
+Días 1 y 2: confirmar decisiones, contratos, datos y permisos; distribuir paquetes según dependencias. Días 3 a 7: implementar y validar incrementos en el orden indicado, permitiendo trabajo paralelo cuando no dependa de otro paquete. Días 8 y 9: integrar recorridos y resolver defectos. Día 10: demostrar criterios, revisar resultados y registrar retrospectiva. Esta secuencia es una hipótesis a contrastar con el equipo.
 
 ## Subtareas asociadas
 
-| Padre | Subtarea existente propuesta |
+| Padre | Subtarea del backlog |
 | --- | --- |
-| RSY-81 | Agregar versión y trazabilidad de preguntas utilizadas |
-| RSY-86 | Registrar auditoría de publicación y revisión de contenido |
+| RSY-90 | Controlar entradas, validación y coste de generación asistida |
+| RSY-91 | Validar archivos y limpiar temporales de extracción |
+| RSY-98 | Verificar privacidad y coherencia de exportaciones |
+| RSY-113 | Definir y probar consumo concurrente de cuota diaria |
+| RSY-115 | Procesar webhooks firmados y reconciliar pagos |
+| RSY-118 | Definir efectos de cancelación y reembolso sobre beneficios |
+| RSY-128 | Validar banco utilizable antes de iniciar torneo |
+| RSY-132 | Recuperar vista de proyección tras interrupción de red |
 
-Reutilizar por título y padre si estas subtareas ya fueron importadas. Sus claves nuevas no se conocen en el CSV de origen. Están incluidas en las horas del padre y no suman capacidad adicional.
+Reutilizar las subtareas ya importadas y sus claves asignadas. Desglosar cada tarea adicional PL en contrato/datos, implementación y validación dentro de sus horas, sin duplicar estimaciones.
 
-## Criterios de aceptación del incremento
+## Condición de cierre
 
-1. Modelo y validaciones incluyen materia, tema, dificultad, opciones, una respuesta correcta y explicación.
-2. Solo preguntas aprobadas entran en juegos; pendiente, aprobado y rechazado tienen transiciones autorizadas y auditadas.
-3. Docente y administrador no pueden atribuirse permisos desde el cliente; implementar roles y bootstrap administrativo como parte de RSY-85/86.
-4. El set inicial se revisa por materia, registra fuente/licencia y preserva versión de las preguntas usadas.
-
-## Criterios de las tareas originales
-
-### RSY-81
-
-- Esquema incluye materia, tema, dificultad, opciones, respuesta y explicación.
-- IDs y versión.
-- Exactamente una opción correcta.
-
-### RSY-82
-
-- Crear/editar preguntas con permisos administrativos.
-- Conservar borrador.
-- Validar opciones y metadatos antes de guardar.
-
-### RSY-83
-
-- Servidor rechaza ausencia de materia, tema o dificultad.
-- Error por campo.
-- No persistir pregunta incompleta.
-
-### RSY-84
-
-- Set inicial por materia con revisión académica.
-- Cantidad por acordar.
-- Sin duplicados y con fuentes/licencias registradas.
-
-### RSY-85
-
-- Definir evidencia mínima y revisión de cuenta docente.
-- Acceso limitado a documentos.
-- Retención y aprobación por acordar.
-
-### RSY-86
-
-- Transiciones pendiente/aprobado/rechazado autorizadas y auditadas.
-- Solo aprobadas aparecen en juegos.
-- Rechazo con motivo.
-
-### RSY-87
-
-- Docente autorizado envía pregunta como pendiente.
-- Ver validación y estado propio.
-- Edición no evita moderación.
-
-### RSY-88
-
-- Administrador revisa pregunta y decide con motivo.
-- Registrar actor y fecha.
-- Edición concurrente no pierde cambios.
-
-## Decisiones antes de iniciar
-
-Materias piloto y cantidad inicial; rúbrica académica; evidencia mínima docente y retención; matriz de permisos y alta administrativa controlada.
-
-Confirmar además disponibilidad del equipo, acceso a servicios y dataset de prueba. Reabrir la estimación si una decisión cambia el alcance.
-
-## Secuencia de trabajo
-
-| Días | Trabajo | Evidencia |
-| --- | --- | --- |
-| 1 y 2 | Resolver decisiones, revisar contratos y preparar datos; empezar las dependencias de backend | Contratos y reglas revisados |
-| 3 a 5 | Implementar dominio, persistencia y controles; desarrollar interfaz contra el contrato | Tareas de dominio verificables |
-| 6 a 8 | Conectar interfaz, servicios y consumidores; ejecutar pruebas específicas | Incremento integrado y escenarios negativos |
-| 9 | Ejecutar recorrido completo y corregir bloqueantes | Evidencia de aceptación |
-| 10 | Demostrar, revisar aceptación, registrar arrastres y retrospectiva | Cierre o pendientes explícitos |
-
-Es una secuencia de actividades, no trabajo simultáneo atribuido a una sola persona. Con varios perfiles se puede coordinar en paralelo sin multiplicar capacidad sin confirmación.
-
-## Riesgo principal y ajuste de alcance
-
-La curación depende de disponibilidad de revisión académica. Limitar materias piloto antes de fijar cantidades, no aprobar contenido sin revisar.
-
-Si la capacidad no alcanza: Reducir el número de materias piloto aprobado; conservar revisión y permisos en todos los casos.
-
-## Demostración de cierre
-
-Enviar una pregunta como docente, rechazarla con motivo, corregirla, aprobarla y comprobar su disponibilidad para consumo.
-
-Adjuntar resultados de pruebas y escenarios fallidos relevantes; no marcar terminado un ítem sin su criterio completo. Aplicar la [definición común de terminado](PLAN-GENERAL.md#definicion-comun-de-terminado).
-
-## Seguimiento en Jira
-
-Agrupar bajo las épicas originales, asignar tareas al sprint y mantener subtareas ligadas al padre. No añadir épicas como trabajo ejecutable. Las dependencias propuestas son referencias para refinar, no enlaces Blocks creados automáticamente.
-
-Las tareas que se pospongan conservan estado pendiente y se reasignan tras revisar capacidad. Ningún archivo de este plan cambia el tablero ni crea sprints en Jira.
+Aceptar los criterios de cada paquete y adjuntar evidencia; pruebas pertinentes aprobadas, permisos verificados en servidor, interfaz accesible y documentación actualizada. Resolver defectos bloqueantes. Los recortes se registran como pendientes y desplazan sus dependientes; no se declara completo un sprint por crear este documento.

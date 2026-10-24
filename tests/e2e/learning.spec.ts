@@ -1,0 +1,42 @@
+import {test,expect,type Page,type APIRequestContext} from '@playwright/test';
+import {Pool} from 'pg';
+const origin={Origin:'http://localhost:3000'};
+const password='Una frase segura para sprint uno';
+async function account(page:Page,request:APIRequestContext,label:string){
+ const email=`${label}-${Date.now()}-${Math.random().toString(16).slice(2)}@example.com`.toLowerCase();
+ const r=await page.request.post('/api/auth/register',{headers:origin,data:{name:label,email,password}});expect(r.ok()).toBe(true);const user=(await r.json()).user;
+ await expect.poll(async()=>{const out=await(await request.get('http://localhost:8025/api/v1/messages')).json();return out.messages.some((m:any)=>m.To.some((t:any)=>t.Address===email));}).toBe(true);
+ const out=await(await request.get('http://localhost:8025/api/v1/messages')).json();const m=out.messages.find((m:any)=>m.To.some((t:any)=>t.Address===email));const detail=await(await request.get(`http://localhost:8025/api/v1/message/${m.ID}`)).json();const token=detail.Text.match(/#token=([a-f0-9]{64})/)[1];expect((await page.request.post('/api/auth/verify',{headers:origin,data:{token}})).ok()).toBe(true);return user;
+}
+test('perfil y seis avatares persisten; omitir calibración asigna ELO por materia',async({page,request},testInfo)=>{
+ await account(page,request,'PerfilE2E');await page.goto('/espacio');
+ await expect(page.getByRole('heading',{name:'Tu punto de partida'})).toBeVisible();await expect(page.getByRole('radio')).toHaveCount(6);
+ await page.getByLabel('Nivel educativo').selectOption('secundaria');await page.getByLabel('Matemáticas',{exact:true}).check();await page.getByLabel('Física',{exact:true}).check();await page.getByLabel('Astronauta',{exact:true}).check();await page.getByRole('button',{name:'Guardar perfil',exact:true}).click();await expect(page.getByRole('status')).toContainText('Perfil guardado');await page.reload();await expect(page.getByLabel('Astronauta',{exact:true})).toBeChecked();await expect(page.getByAltText('Tu avatar')).toHaveAttribute('src','/avatars/avatar-2.svg');await expect(page.getByLabel('Matemáticas',{exact:true})).toBeChecked();
+ await page.getByRole('button',{name:'Calibración',exact:true}).click();await page.getByRole('combobox',{name:'Materia',exact:true}).selectOption('matematicas');await page.getByRole('button',{name:'Saltar test y usar 1000 ELO'}).click();await expect(page.getByRole('status').filter({hasText:'1000'})).toBeVisible();expect((await(await page.request.get('/api/profile')).json()).ratings).toContainEqual({subject_id:'matematicas',elo:1000});
+ await page.getByRole('button',{name:'Volver al perfil'}).click();for(const width of [1440,390]){await page.setViewportSize({width,height:960});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:testInfo.outputPath(`perfil-${width}.png`),fullPage:true});}
+});
+
+test('solicitud docente, moderación, banco y calibración integrada',async({page,request,browser},testInfo)=>{
+ test.setTimeout(120000);const student=await account(page,request,'DocenteE2E');const adminContext=await browser.newContext();const admin=await adminContext.newPage();await admin.goto('/');const administrator=await account(admin,request,'AdminE2E');
+ const connection=process.env.E2E_DATABASE_URL||'postgresql://rankstudy:rankstudy_local@localhost:55432/rankstudy';const url=new URL(connection);if(!['localhost','127.0.0.1'].includes(url.hostname)||!url.pathname.startsWith('/rankstudy'))throw Error('Solo base local de desarrollo.');const db=new Pool({connectionString:connection});const questionIds:string[]=[];
+ try{
+  // Equivale al bootstrap administrativo del servidor, solo para esta cuenta de prueba.
+  await db.query("UPDATE users SET role='admin' WHERE id=$1",[administrator.id]);
+  await page.goto('/espacio');await page.getByLabel('Nivel educativo').selectOption('secundaria');await page.getByLabel('Matemáticas',{exact:true}).check();await page.getByRole('button',{name:'Guardar perfil',exact:true}).click();await expect(page.getByRole('status')).toContainText('Perfil guardado');
+  await page.getByRole('button',{name:'Solicitud docente'}).click();await page.getByLabel('Institución',{exact:true}).fill('Instituto E2E');await page.getByLabel('Correo institucional').fill('docente@instituto.example');await page.getByLabel('Referencia para verificar').fill('Directorio docente de prueba, sin documentos personales.');await page.getByRole('button',{name:'Enviar solicitud'}).click();await expect(page.getByRole('status')).toContainText('Solicitud enviada');
+  await admin.goto('/espacio');await admin.getByRole('button',{name:'Moderación',exact:true}).click();const application=admin.locator('article').filter({has:admin.getByRole('heading',{name:'DocenteE2E · Instituto E2E',exact:true})});await application.getByLabel('Motivo de la revisión').fill('Identidad y relación institucional de prueba verificadas.');await application.getByRole('checkbox').check();await application.getByRole('button',{name:'Guardar revisión'}).click();await expect(admin.getByRole('status')).toContainText('Revisión registrada');
+  await page.reload();await page.getByRole('button',{name:'Mis preguntas'}).click();await page.getByLabel('Tema',{exact:true}).fill('Aritmética E2E');await page.getByLabel('Enunciado').fill('E2E: ¿Cuánto es dos más dos?');for(let i=0;i<4;i++)await page.getByLabel(`Opción ${i+1}`,{exact:true}).fill(String(4-i));await page.getByLabel('Explicación',{exact:true}).fill('Dos unidades y otras dos unidades suman cuatro.');await page.getByLabel('Fuente',{exact:true}).fill('Contenido original E2E');await page.getByLabel('Licencia o permiso de uso').fill('CC0-1.0');await page.getByRole('button',{name:'Guardar y enviar a revisión'}).click();await expect(page.getByRole('status')).toContainText('Pregunta enviada');
+  const bank=await(await page.request.get('/api/questions')).json();const q=bank.find((q:any)=>q.prompt==='E2E: ¿Cuánto es dos más dos?');questionIds.push(q.id);
+  await admin.getByRole('button',{name:'Moderación',exact:true}).click();const item=admin.locator('article').filter({has:admin.getByRole('heading',{name:q.prompt,exact:true})});await item.getByLabel('Motivo de la revisión').fill('Respuesta, explicación, dificultad y licencia verificadas.');await item.getByRole('checkbox').check();await item.getByRole('button',{name:'Guardar revisión'}).click();await expect(item).toHaveCount(0);
+  for(let i=0;i<11;i++){const draft={subjectId:'matematicas',topic:'Aritmética E2E',difficulty:1,prompt:`E2E: ¿Cuánto es ${i+3} más uno?`,options:[String(i+4),String(i+3),String(i+2),String(i+1)],correctIndex:0,explanation:`Sumar uno a ${i+3} produce ${i+4}.`,source:'Contenido original E2E',license:'CC0-1.0'};const r=await page.request.post('/api/questions',{headers:origin,data:draft});expect(r.ok()).toBe(true);const {id}=await r.json();questionIds.push(id);expect((await admin.request.post(`/api/moderation/questions/${id}`,{headers:origin,data:{status:'approved',version:1,reason:'Comprobación aritmética y licencia correctas.',checklist:true}})).ok()).toBe(true);}
+  await page.getByRole('button',{name:'Calibración',exact:true}).click();await page.getByRole('button',{name:'Comenzar o retomar test'}).click();await expect(page.getByText('Pregunta 1 de 12',{exact:true})).toBeVisible();for(const field of await page.locator('fieldset').all())await field.getByRole('radio').first().check();await page.getByRole('button',{name:'Finalizar calibración'}).click();await expect(page.getByRole('strong')).toHaveText('1400 ELO');await page.screenshot({path:testInfo.outputPath('calibracion-completa.png'),fullPage:true});
+ }finally{
+  // Borrar exclusivamente fixtures creadas por esta prueba, nunca truncar la base de la aplicación.
+  await db.query('DELETE FROM subject_ratings WHERE user_id=$1',[student.id]);await db.query('DELETE FROM calibrations WHERE user_id=$1',[student.id]);
+  for(const id of questionIds){await db.query('DELETE FROM question_versions WHERE question_id=$1',[id]);await db.query('DELETE FROM moderation_audit WHERE entity_id=$1',[id]);await db.query('DELETE FROM questions WHERE id=$1 AND owner_id=$2',[id,student.id]);}
+  await db.query('DELETE FROM moderation_audit WHERE actor_id=$1 OR actor_id=$2',[student.id,administrator.id]);
+  await db.query('DELETE FROM teacher_applications WHERE user_id=$1',[student.id]);
+  await db.query('DELETE FROM users WHERE id=$1 OR id=$2',[student.id,administrator.id]);
+  await db.end();await adminContext.close();
+ }
+});

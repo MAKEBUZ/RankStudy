@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('registro, correo SMTP, verificación y cierre de sesión', async ({ page, request }) => {
+test('registro, correo SMTP, verificación y cierre de sesión', async ({ page, request },testInfo) => {
   const email = `e2e-${Date.now()}@example.com`;
   await page.goto('/');
   await page.getByLabel('Tu nombre').fill('Estudiante E2E');
   await page.getByLabel('Correo electrónico').fill(email);
   await page.getByLabel('Contraseña', { exact: true }).fill('Una frase segura para probar');
+  const started=performance.now();
   await page.getByRole('button', { name: 'Crear mi cuenta' }).click();
   await expect(page.getByRole('heading', { name: 'Revisa tu correo.' })).toBeVisible({ timeout: 15000 });
   await expect.poll(async () => {
@@ -22,6 +23,7 @@ test('registro, correo SMTP, verificación y cierre de sesión', async ({ page, 
   await page.goto(link);
   await page.getByRole('button', { name: 'Verificar mi correo' }).click();
   await expect(page.getByRole('heading', { name: 'Ya eres parte.' })).toBeVisible();
+  const elapsed=performance.now()-started;await testInfo.attach('tiempo-registro-local.json',{body:JSON.stringify({provider:'email',elapsedMs:Math.round(elapsed),environment:'local SMTP + PostgreSQL',sample:1,includesHumanWait:false}),contentType:'application/json'});expect(elapsed).toBeLessThan(60000);
   await page.getByRole('link', { name: 'Continuar a mi cuenta' }).click();
   await expect(page.getByRole('heading', { name: 'Bienvenido, Estudiante.' })).toBeVisible();
   await page.getByRole('button', { name: 'Comprobar acceso a duelos' }).click();

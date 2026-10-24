@@ -5,6 +5,12 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://rankstudy:test_only@localhost:5432/rankstudy_test
+      E2E_DATABASE_URL: postgresql://rankstudy:test_only@localhost:5432/rankstudy_test
+      WEB_ORIGIN: http://localhost:3000
+      SMTP_HOST: localhost
+      SMTP_PORT: 1025
     services:
       postgres:
         image: postgres:17-alpine
@@ -16,6 +22,9 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U rankstudy -d rankstudy_test"
           --health-interval 5s --health-timeout 5s --health-retries 10
+      mailpit:
+        image: axllent/mailpit:v1.27
+        ports: ["1025:1025", "8025:8025"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,3 +38,7 @@ jobs:
         env:
           TEST_DATABASE_URL: postgresql://rankstudy:test_only@localhost:5432/rankstudy_test
       - run: npm run build
+      - run: npm run db:migrate
+      - run: npm run db:seed
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

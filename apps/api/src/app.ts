@@ -1,16 +1,25 @@
 import { Body, Controller, Get, Inject, Module, Post, Req, Res } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { Throttle, ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService, publicUser } from './auth.service';
 import { Database } from './db';
 import { Mailer } from './mail';
 import { config } from './config';
+import { LearningService } from './learning.service';
+import { LearningController } from './learning.controller';
+import { OAuthController } from './oauth.controller';
+import { OAuthService, OAuthTokens } from './oauth.service';
+import { CompetitionService } from './competition.service';
+import { CommunityService } from './community.service';
+import { CompetitionController } from './competition.controller';
+import { CompetitionRuntime } from './competition.runtime';
 
 const cookieOptions = () => ({ httpOnly: true, sameSite: 'lax' as const, secure: config.NODE_ENV === 'production', path: '/', maxAge: config.SESSION_TTL_DAYS * 86400000 });
 const session = (req: Request): string | undefined => req.cookies?.rs_session;
 
 @Controller()
+@Throttle({default:{limit:30,ttl:60000}})
 class AuthController {
   constructor(@Inject(AuthService) private readonly auth: AuthService) {}
   @Get('health') health() { return { status: 'ok' }; }
@@ -35,5 +44,5 @@ class AuthController {
   @Get('pvp/access') pvp(@Req() req: Request) { return this.auth.pvp(session(req)); }
 }
 
-@Module({ imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 30 }])], controllers: [AuthController], providers: [AuthService, Database, Mailer, { provide: APP_GUARD, useClass: ThrottlerGuard }] })
+@Module({ imports: [ThrottlerModule.forRoot([{ ttl: 60000, limit: 120 }])], controllers: [AuthController, LearningController, OAuthController, CompetitionController], providers: [AuthService, Database, Mailer, LearningService, OAuthService, OAuthTokens, CompetitionService, CommunityService, CompetitionRuntime, { provide: APP_GUARD, useClass: ThrottlerGuard }] })
 export class AppModule {}

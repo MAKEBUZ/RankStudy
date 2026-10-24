@@ -1,165 +1,167 @@
-# Sprint 1 Registro y verificación de cuenta
+# Sprint 1: Bases, onboarding y contenido académico
 
 ## Objetivo
 
-Un estudiante puede crear una cuenta con correo y contraseña, recibir el mensaje de verificación y verificar su correo. El servidor impide acceder a las funciones PvP mientras la cuenta no esté verificada.
+Un estudiante se registra, configura su perfil y obtiene un ELO inicial sobre contenido revisado.
 
-Al terminar se demostrará este flujo desde la interfaz hasta la persistencia, con manejo de errores y pruebas. La épica relacionada es **RSY-1 Onboarding y perfil**.
+## Capacidad y alcance
 
-## Duración y capacidad propuesta
+Propuesta de dos semanas, sin fechas ni responsables nominales confirmados. 37 tareas originales; 250 h de entrega, 30 h de integración y documentación, 20 h de reserva: **300 h totales**. Equivale aritméticamente a 5 personas con 60 h efectivas por sprint; las dependencias y especialidades deben validarse antes de comprometer el alcance. Las horas de subtareas ya están incluidas en su padre.
 
-Duración: dos semanas, equivalentes a diez días laborables. Fecha de planificación: 6 de octubre de 2026. Inicio y fin quedan pendientes del calendario del equipo; no se cuentan festivos como días disponibles sin confirmación.
+Registro, perfil, avatares, banco, moderación y calibración están implementados y validados localmente. OAuth tiene integración preparada y requiere credenciales y pruebas reales. El piloto académico necesita aprobación. Consultar el [estado por tarea y evidencia actual](ESTADO-SPRINT-1.md); el sprint no se declara cerrado sin esas aceptaciones.
 
-Hipótesis de capacidad para dimensionar: una persona con 6 horas efectivas por día, 60 horas totales. Se proponen 50 horas para el backlog funcional, 6 para habilitación y documentación, y 4 de reserva. No es una velocidad observada ni un compromiso del equipo. Si la disponibilidad real es menor, recalcular antes de iniciar. Responsables nominales pendientes; los perfiles de la tabla indican quién debería asumir el trabajo.
+## Backlog y estimaciones
 
-El alcance obligatorio es el registro por correo. Las opciones Google y Apple de RSY-18 y RSY-19 quedan para un sprint posterior; estas dos tareas solo se completan parcialmente en este sprint y deben conservar esa distinción en Jira.
-
-## Backlog seleccionado
-
-| Orden | Incidencia | Entrega del Sprint 1 | Dependencias |
-| --- | --- | --- | --- |
-| 1 | RSY-9 | Modelo de usuario y credenciales; email único normalizado; creación transaccional de cuenta y endpoint de registro | Decisiones técnicas iniciales |
-| 2 | RSY-10 | Hash seguro de contraseña; ausencia de secretos en respuestas y logs | RSY-9 |
-| 3 | RSY-11 | Pruebas unitarias del registro: éxito, duplicados, datos inválidos y reversión de fallos | RSY-9, RSY-10 |
-| 4 | RSY-15 | Token de verificación y envío de correo; vencimiento y reenvío controlado | RSY-9 |
-| 5 | RSY-16 | Validación de token y actualización del estado de cuenta | RSY-15 |
-| 6 | RSY-17 | Restricción de acceso PvP para cuentas no verificadas, aplicada en servidor | RSY-16 |
-| 7 | RSY-18, alcance parcial | Diseño accesible del formulario de correo y contraseña y de los estados de verificación | Contrato de registro |
-| 8 | RSY-19, alcance parcial | Conexión del formulario de correo con registro y verificación | RSY-9, RSY-10, RSY-15, RSY-16 |
-| 9 | RSY-20 | Errores por campo, carga, éxito y reintento ante fallo de red | RSY-19, alcance parcial |
-| 10 | RSY-22 | Pruebas de email duplicado, contraseña inválida, campos vacíos y doble envío | Registro integrado |
-
-RSY-17 depende de la identidad autenticada y de un punto protegido donde probar la restricción. El sprint debe incluir una sesión mínima y una ruta protegida de prueba si esos mecanismos aún no existen. No exige construir el motor de duelos.
-
-## Subtareas necesarias
-
-Las subtareas nuevas del backlog mejorado no tenían clave asignada antes de su importación. Buscar por título y reutilizarlas si ya existen; no volver a crearlas.
-
-| Padre | Subtarea | Criterio de terminación |
+| Incidencia | Entrega | Horas propuestas |
 | --- | --- | --- |
-| RSY-9 | Implementar creación transaccional de cuenta y endpoint de registro | Persistencia atómica; duplicado rechazado; respuesta sin credenciales; fallo revierte usuario y credenciales |
-| RSY-15 | Definir vencimiento y reenvío seguro de verificación | TTL y límite acordados; token almacenado como hash; reenvío invalida el anterior; vencimiento y abuso probados |
-| RSY-9 | Documentar contrato y migración inicial | Campos, restricciones, códigos de error y procedimiento de migración registrados y usados por frontend y pruebas |
-| RSY-17 | Implementar identidad mínima y protección de acceso | Servidor identifica usuario de forma verificable; cliente no puede suplantarlo mediante un ID; cuenta no verificada recibe rechazo en ruta protegida |
-| RSY-19 | Integrar pantalla de confirmación y reenvío | Mostrar estado pendiente, verificación correcta y error de token; reenvío respeta el límite del servidor |
-| RSY-22 | Validar flujo completo de registro y verificación | Evidencia reproducible de cuenta nueva, correo, token, verificación y cambio de permiso |
+| RSY-9 | Diseñar el modelo de usuario y tabla de credenciales | 8 |
+| RSY-10 | Implementar hashing seguro de contraseña (bcrypt/argon2) | 3 |
+| RSY-11 | Escribir pruebas unitarias del endpoint | 5 |
+| RSY-15 | Generar y enviar token de verificación por correo | 6 |
+| RSY-16 | Implementar endpoint de validación de token | 4 |
+| RSY-17 | Bloquear acceso a funciones PvP hasta verificar el email | 5 |
+| RSY-18 | Diseñar la UI con las 3 opciones de registro | 11 |
+| RSY-19 | Conectar formulario a los endpoints de backend | 12 |
+| RSY-20 | Manejar y mostrar errores de validación | 3 |
+| RSY-22 | Probar casos límite (email duplicado, contraseña débil) | 5 |
+| RSY-12 | Configurar credenciales OAuth en las consolas de Google y Apple | 8 |
+| RSY-13 | Implementar el flujo de login social y creación de cuenta vinculada | 16 |
+| RSY-14 | Probar el flujo end-to-end en ambos proveedores | 8 |
+| RSY-21 | Medir el tiempo de registro end-to-end (<60s) | 6 |
+| RSY-23 | Definir tabla de niveles educativos (secundaria/universidad/oposición) | 4 |
+| RSY-24 | Definir catálogo de materias predefinidas | 5 |
+| RSY-25 | Construir selector de nivel (single-select) | 4 |
+| RSY-26 | Construir selector de materias (multi-select) | 5 |
+| RSY-27 | Implementar PATCH de perfil para actualizar nivel/materias | 8 |
+| RSY-29 | Diseñar al menos 6 combinaciones gratuitas | 6 |
+| RSY-30 | Exportar assets optimizados para web/móvil | 4 |
+| RSY-31 | Construir carrusel/selector de combinaciones | 6 |
+| RSY-32 | Guardar selección al finalizar onboarding | 4 |
+| RSY-33 | Agregar campo de avatar al modelo de usuario | 4 |
+| RSY-81 | Definir esquema (materia, tema, dificultad, opciones, respuesta) | 7 |
+| RSY-82 | Construir formulario de carga y edición de preguntas | 8 |
+| RSY-83 | Bloquear guardado si falta materia, tema o dificultad | 4 |
+| RSY-84 | Curar y cargar el set inicial de preguntas por materia | 7 |
+| RSY-85 | Definir flujo de verificación (documento/institución) | 6 |
+| RSY-86 | Implementar estados pendiente/aprobado/rechazado | 7 |
+| RSY-87 | Construir formulario de carga para docentes | 5 |
+| RSY-88 | Construir panel de moderación para administradores | 6 |
+| RSY-35 | Curar 10-15 preguntas por materia con dificultad etiquetada | 14 |
+| RSY-36 | Implementar fórmula de ELO inicial según aciertos/dificultad | 12 |
+| RSY-37 | Definir ELO por defecto para quienes saltan el test | 4 |
+| RSY-38 | Construir la UI del test con opción de saltar | 12 |
+| RSY-39 | Mostrar resultado y ELO asignado al finalizar | 8 |
 
-Las últimas cuatro subtareas son propuestas adicionales de este sprint. La instalación del entorno, configuración de base de datos, proveedor de correo de pruebas y ejecución automatizada de pruebas forman parte del trabajo de habilitación de estas entregas.
 
-## Criterios de aceptación del sprint
+Las referencias PL son propuestas locales, sin clave Jira asignada. RSY-18 y RSY-19 incluyen aquí la suma del tramo de correo y el de OAuth; no se duplican como incidencias.
 
-1. Con datos válidos se crea exactamente una cuenta; correo normalizado evita duplicados por espacios y mayúsculas conforme a la política acordada.
-2. La contraseña se almacena como hash con salt usando una biblioteca adecuada. La contraseña, su hash y los tokens no aparecen en respuestas ni logs.
-3. La verificación usa un token impredecible, de un solo uso y con vencimiento. El enlace funciona en el entorno de demostración.
-4. Tokens vencidos, alterados, reutilizados o reemplazados por reenvío son rechazados con un mensaje comprensible.
-5. Una cuenta sin verificar no accede al punto protegido PvP. Tras verificar, supera el control de email sin omitir otros permisos necesarios.
-6. El formulario evita envíos repetidos, presenta errores por campo y permite recuperarse de fallos de red sin crear cuentas duplicadas.
-7. El flujo puede operarse con teclado y muestra etiquetas, foco y estados de carga y confirmación.
-8. Pruebas automatizadas cubren registro, verificación y autorización. Se adjunta evidencia del recorrido integrado y de las correcciones.
+## Secuencia y criterios de aceptación
 
-## Secuencia de trabajo propuesta
+### 1. Registro por correo y verificación
 
-| Días | Trabajo | Resultado esperado |
-| --- | --- | --- |
-| 1 y 2 | Acordar decisiones, habilitar entorno, diseñar modelo y contrato; preparar interfaz | Contrato y migración revisados; aplicación ejecutable en desarrollo |
-| 3 y 4 | Implementar registro, hash, sesión mínima y pruebas unitarias | Registro persistente y protegido contra duplicados |
-| 5 y 6 | Implementar envío, validación, vencimiento y reenvío del token | Verificación completa en entorno de pruebas |
-| 7 y 8 | Integrar frontend, restricción PvP y errores | Flujo integrado con permisos comprobables |
-| 9 | Ejecutar casos límite y recorrido completo; corregir defectos | Evidencia de aceptación y defectos críticos resueltos |
-| 10 | Demostración, revisión del sprint y retrospectiva | Entregas aceptadas y ajustes para Sprint 2 |
+Crear cuentas por correo, verificar identidad y proteger el acceso.
 
-El equipo confirma esta secuencia tras estimar. Si la capacidad no alcanza, preservar primero el flujo de correo integrado; no declarar terminada una entrega sin su validación.
+Decisiones antes de iniciar: Conservar los contratos y controles documentados en API y arquitectura.
 
-## Estimación inicial y responsables
+- Registro transaccional, contraseña Argon2id y correo único normalizado.
+- Verificación temporal de un solo uso, reenvío limitado y sesión protegida.
+- Validar errores, permisos, teclado y recorrido completo.
 
-| Trabajo | Horas propuestas | Perfil responsable | Resultado verificable |
-| --- | --- | --- | --- |
-| Habilitación del monorepo, PostgreSQL, Mailpit y documentación | 6 | Desarrollo | Instalación, migración y arranque reproducibles |
-| RSY-9 modelo, contrato y registro transaccional | 8 | Backend | Cuenta y credenciales atómicas; unicidad del correo |
-| RSY-10 hash de contraseña | 3 | Backend | Argon2id y ausencia de secretos en la respuesta |
-| RSY-11 pruebas de registro | 5 | Backend y QA | Éxito, datos inválidos, duplicados y rollback |
-| RSY-15 correo y reenvío seguro | 6 | Backend | Correo en Mailpit, TTL y cooldown |
-| RSY-16 consumir token y verificar | 4 | Backend | Rechazo de tokens alterados, vencidos y usados |
-| RSY-17 sesión mínima y restricción PvP | 5 | Backend | 401 sin sesión; 403 sin verificar; acceso verificado |
-| RSY-18 diseño de registro por correo | 5 | Frontend | Interfaz adaptable, etiquetas, teclado y estados |
-| RSY-19 integración por correo | 6 | Frontend | Recorrido registro, confirmación y sesión |
-| RSY-20 errores y recuperación | 3 | Frontend | Errores por campo, red y envío de correo |
-| RSY-22 validación integrada | 5 | QA y desarrollo | Pruebas automatizadas y demostración del recorrido |
-| Reserva para integración y defectos | 4 | Desarrollo | No se consume como funcionalidad adicional |
-| Total | 60 | Por asignar | Confirmar capacidad antes de iniciar |
+Demostración: Registrar, verificar, iniciar y cerrar sesión; rechazar tokens usados y acceso sin verificar.
 
-Son horas de trabajo propuestas, no horas ya invertidas. Las subtareas se incluyen en la estimación de su padre y no se suman nuevamente. RSY-18 y RSY-19 solo estiman el alcance de correo.
+Riesgo: La evidencia existente cubre este incremento, no todo el nuevo Sprint 1.
 
-## Decisiones técnicas del Sprint 1
+Ajuste si falta capacidad: Conservar el flujo integrado de correo.
 
-- Monorepo npm con `apps/web` (Next.js, React, TypeScript y Tailwind CSS) y `apps/api` (NestJS y TypeScript).
-- PostgreSQL 17, consultas parametrizadas con `pg` y migración SQL transaccional. Docker Compose habilita base y correo local.
-- Contraseña de 12 a 128 caracteres, sin reglas arbitrarias de símbolos. Argon2id con 64 MiB, 3 iteraciones y paralelismo 1; calibrar consumo en el entorno de despliegue.
-- Email normalizado con trim y minúsculas. La política inicial informa duplicados para permitir recuperar el acceso mediante inicio de sesión. No se implementa recuperación de contraseña en este sprint.
-- Sesión opaca aleatoria de 256 bits, hash SHA-256 persistido, vencimiento de 7 días y cookie HttpOnly con SameSite Lax. Secure obligatorio en producción; cierre elimina la sesión del servidor.
-- Token de verificación aleatorio de 256 bits, hash SHA-256 persistido, TTL inicial de 30 minutos y un reenvío cada 60 segundos por usuario. Reenvío reemplaza el token anterior. Valores configurables.
-- Mailpit captura correos de desarrollo. Un fallo SMTP conserva la cuenta y se informa al usuario, quien puede reenviar desde su sesión. El enlace se consume mediante confirmación POST, no al abrirlo.
-- Frontend y API se consumen desde el mismo origen mediante proxy de Next.js. La API exige Origin autorizado en escrituras y limita solicitudes por IP a 30 por minuto en una instancia.
-- La ruta `/api/pvp/access` comprueba autenticación y correo verificado. No crea duelos ni implementa Socket.IO; estos pertenecen al siguiente alcance PvP.
-- Pruebas de servicio con Vitest; recorrido de navegador con Playwright. Una base dedicada permite repetir las pruebas de persistencia contra PostgreSQL real.
+### 2. Acceso con Google y Apple
 
-Estas decisiones quedan adoptadas para la base inicial. La aceptación funcional y la configuración de producción corresponden al equipo antes del lanzamiento.
+Crear y vincular cuentas con Google y Apple y completar las tres opciones de registro.
 
-## Pendientes de la reunión de inicio
+Decisiones antes de iniciar: Credenciales y dominios de callback; cuentas de prueba para ambos proveedores; política de vinculación con cuenta existente; criterio exacto de medición menor de 60 segundos.
 
-- Confirmar inicio, fin, disponibilidad real y responsables nominales.
-- Revisar las estimaciones de la tabla con quienes harán el trabajo.
-- Validar política de contraseña, normalización de email, TTL y reenvío con el responsable funcional.
-- Definir proveedor SMTP y dominio HTTPS de producción antes del despliegue.
+- Validar state, nonce, firma y destinatario de los tokens en servidor; el rechazo del consentimiento no crea cuentas parciales.
+- Vincular una identidad existente exige prueba de titularidad; no fusionar cuentas solo por coincidencia de email.
+- RSY-18 y RSY-19 completan aquí el alcance OAuth pendiente; se conserva la funcionalidad de correo del Sprint 1.
+- Medir cada proveedor con inicio y fin definidos, muestra y entorno registrados; informar separadamente la espera de correo y resolver cualquier incumplimiento del objetivo <60 s.
 
-Guardar las decisiones acordadas junto al código. No colocar credenciales reales en el repositorio.
+Demostración: Registrar una cuenta por cada proveedor, rechazar consentimiento y repetir el acceso con una cuenta ya vinculada; presentar la medición de registro.
 
-## Riesgos y respuesta
+Riesgo: Apple puede exigir configuración de dominio y cuenta de desarrollador. Sin acceso real a ambos proveedores, RSY-14 no se cierra con mocks.
 
-| Riesgo | Respuesta |
+Ajuste si falta capacidad: Posponer RSY-21 si el acceso a proveedores consume la reserva; conservar el objetivo como pendiente y no declarar completas las tres opciones.
+
+### 3. Preferencias académicas y avatar inicial
+
+Guardar nivel educativo, materias y avatar gratuito desde un onboarding que puede retomarse.
+
+Decisiones antes de iniciar: Catálogo inicial y relación nivel/materia; obligatoriedad de selecciones; seis combinaciones de avatar y licencias de los assets.
+
+- Un nivel y varias materias compatibles se validan en servidor y persisten tras recarga.
+- PATCH modifica solo el perfil propio y devuelve errores concretos para IDs inválidos o inactivos.
+- Al menos seis combinaciones gratuitas tienen referencia estable, assets optimizados y selección accesible por teclado y móvil.
+- RSY-28 se acepta en Sprint 2 al existir matchmaking; RSY-34 se programa en Sprint 2 cuando perfil, duelo y ranking estén disponibles.
+
+Demostración: Completar onboarding, volver a entrar, cambiar preferencias y verificar persistencia y rechazo de una materia incompatible.
+
+Riesgo: Catálogos o assets sin aprobación pueden bloquear la experiencia; usar un conjunto pequeño aprobado sin inventar materias como definitivas.
+
+Ajuste si falta capacidad: Reducir variedad de materias manteniendo un catálogo compatible; no recortar las seis combinaciones exigidas por RSY-29.
+
+### 4. Banco académico y moderación docente
+
+Disponer de preguntas aprobadas y versionadas y un flujo docente con revisión administrativa.
+
+Decisiones antes de iniciar: Materias piloto y cantidad inicial; rúbrica académica; evidencia mínima docente y retención; matriz de permisos y alta administrativa controlada.
+
+- Modelo y validaciones incluyen materia, tema, dificultad, opciones, una respuesta correcta y explicación.
+- Solo preguntas aprobadas entran en juegos; pendiente, aprobado y rechazado tienen transiciones autorizadas y auditadas.
+- Docente y administrador no pueden atribuirse permisos desde el cliente; implementar roles y bootstrap administrativo como parte de RSY-85/86.
+- El set inicial se revisa por materia, registra fuente/licencia y preserva versión de las preguntas usadas.
+
+Demostración: Enviar una pregunta como docente, rechazarla con motivo, corregirla, aprobarla y comprobar su disponibilidad para consumo.
+
+Riesgo: La curación depende de disponibilidad de revisión académica. Limitar materias piloto antes de fijar cantidades, no aprobar contenido sin revisar.
+
+Ajuste si falta capacidad: Reducir el número de materias piloto aprobado; conservar revisión y permisos en todos los casos.
+
+### 5. Calibración y ELO inicial
+
+Asignar un ELO inicial por materia mediante un test opcional o un valor por defecto aprobado.
+
+Decisiones antes de iniciar: Fórmula y límites del ELO inicial; valor por defecto; tratamiento de preguntas omitidas; materias piloto y número de preguntas entre 10 y 15 por materia.
+
+- Cada materia piloto dispone de 10 a 15 preguntas de calibración con dificultad y explicación revisadas.
+- Resultado determinista con ejemplos calculados independientemente; saltar asigna un valor explícito y no deja ELO nulo.
+- Doble envío no duplica calibración ni modifica resultados ya aceptados sin una política de recalibración.
+- Pantalla de resultado coincide con ELO persistido y permite continuar al perfil.
+
+Demostración: Terminar el test y mostrar ELO por materia; repetir con otra cuenta que lo omite y comprobar el valor por defecto.
+
+Riesgo: El esfuerzo de curación crece con las materias. Si el conjunto no cabe en 14 h, reducir materias piloto o reestimar, sin comprimir la revisión.
+
+Ajuste si falta capacidad: Reducir materias piloto; mantener test opcional, persistencia y cálculo probado.
+
+## Organización de las dos semanas
+
+Días 1 y 2: confirmar decisiones, contratos, datos y permisos; distribuir paquetes según dependencias. Días 3 a 7: implementar y validar incrementos en el orden indicado, permitiendo trabajo paralelo cuando no dependa de otro paquete. Días 8 y 9: integrar recorridos y resolver defectos. Día 10: demostrar criterios, revisar resultados y registrar retrospectiva. Esta secuencia es una hipótesis a contrastar con el equipo.
+
+## Subtareas asociadas
+
+| Padre | Subtarea del backlog |
 | --- | --- |
-| Credenciales de correo o entrega bloqueadas | Configurar buzón o servidor de correo de pruebas desde el primer día; demostrar entrega y apertura del enlace |
-| Repositorio inicial sin aplicación | Reservar capacidad explícita para habilitación técnica antes de comprometer todas las tareas |
-| RSY-18 y RSY-19 incluyen OAuth | Registrar alcance parcial de correo; conservar Google y Apple pendientes para otro sprint |
-| PvP aún no implementado | Verificar el control en una ruta protegida y reutilizarlo cuando se creen cola y duelos |
-| Configuración de sesión no acordada | Resolver antes de implementar el control RSY-17; no usar un ID enviado por el cliente como identidad |
+| RSY-9 | Implementar creación transaccional de cuenta y endpoint de registro |
+| RSY-15 | Definir vencimiento y reenvío seguro de verificación |
+| RSY-27 | Versionar contrato de preferencias para los consumidores |
+| RSY-36 | Acordar parámetros y ejemplos de calibración inicial |
+| RSY-81 | Agregar versión y trazabilidad de preguntas utilizadas |
+| RSY-86 | Registrar auditoría de publicación y revisión de contenido |
 
-## Definición de terminado
+Reutilizar las subtareas ya importadas y sus claves asignadas. Desglosar cada tarea adicional PL en contrato/datos, implementación y validación dentro de sus horas, sin duplicar estimaciones.
 
-- Código revisado y guardado en el repositorio; aplicación y migraciones ejecutables con instrucciones reproducibles.
-- Criterios de la entrega comprobados y pruebas correspondientes aprobadas.
-- Configuración mediante variables de entorno documentada; ejemplo sin secretos reales.
-- Errores de persistencia, red, correo y autorización tratados según su contrato.
-- Evidencia de demostración y defectos pendientes registrados en Jira.
-- No quedan defectos que bloqueen el flujo objetivo o permitan saltarse la autorización.
+## Condición de cierre
 
-## Demostración de cierre
+Aceptar los criterios de cada paquete y adjuntar evidencia; pruebas pertinentes aprobadas, permisos verificados en servidor, interfaz accesible y documentación actualizada. Resolver defectos bloqueantes. Los recortes se registran como pendientes y desplazan sus dependientes; no se declara completo un sprint por crear este documento.
 
-Crear una cuenta, comprobar que el acceso protegido falla, abrir el correo de pruebas y verificar. Comprobar después que el control de email permite continuar. Repetir con email duplicado, token vencido, token reutilizado y doble envío. Mostrar que la base guarda un hash y que las respuestas no contienen secretos.
+## Desglose técnico del registro existente
 
-## Seguimiento en Jira
-
-Crear Sprint 1 en el tablero RSY y asignar las tareas seleccionadas solo cuando el equipo confirme su capacidad. Mantener la épica RSY-1 como agrupación; no añadirla como trabajo ejecutable del sprint.
-
-Para RSY-18 y RSY-19, crear o reutilizar tareas independientes para el alcance de correo si se necesita cerrar incidencias completas en este sprint, dejando las tareas originales pendientes hasta incorporar OAuth. Evitar marcar ambas como terminadas por completar solo el correo.
-
-El plan no cambia el estado ni crea el sprint automáticamente en Jira. La medida de registro menor a 60 segundos (RSY-21) se programa cuando esté definido si incluye espera de correo y cuando se evalúen las tres opciones de registro.
-
-## Entregables y seguimiento de aceptación
-
-| Entregable | Ubicación | Aceptación |
-| --- | --- | --- |
-| Interfaz de registro, sesión y verificación | `apps/web` | Revisar en escritorio y móvil y ejecutar recorrido de navegador |
-| API, sesiones y controles de acceso | `apps/api/src` | Pruebas de servicio y comprobación HTTP |
-| Modelo y migración inicial | `apps/api/migrations/001_auth.sql` | Aplicar y comprobar rollback/unicidad en PostgreSQL |
-| Entorno local | `compose.yaml` y ejemplos de variables | Arranque reproducible de PostgreSQL y Mailpit |
-| Contrato HTTP | `docs/API.md` | Frontend y pruebas usan las rutas documentadas |
-| Evidencia de validación | `docs/sprints/VALIDACION-SPRINT-1.md` | Revisar resultados y límites antes de cerrar |
-
-Estado del sprint: base implementada para revisión. Su cierre requiere demostración y aceptación del equipo; la existencia del código no sustituye esa aceptación.
-
-## Continuidad propuesta
-
-Sprint 2: Google y Apple (RSY-12, RSY-13 y RSY-14), completar el alcance OAuth de RSY-18 y RSY-19 y medir el registro en RSY-21. Sprint 3 incorpora nivel, materias y selección inicial de avatar. RSY-28 se valida en Sprint 6 cuando exista matchmaking; RSY-34 se cierra en Sprint 11 con perfil, ranking y duelo disponibles.
-
-Consultar el [plan general](PLAN-GENERAL.md) y la [matriz de cobertura](COBERTURA-BACKLOG.md) para los demás sprints. Las fechas y asignaciones se confirman con el equipo antes de iniciar cada uno.
+Conservar bajo RSY-9 la creación transaccional y documentación de contrato/migración; bajo RSY-15 el vencimiento y reenvío seguro; bajo RSY-17 la identidad mínima y restricción de acceso; bajo RSY-19 la confirmación y reenvío; bajo RSY-22 el recorrido integrado. Reutilizar el trabajo y las subtareas existentes. Las decisiones vigentes están en [API](../API.md) y [arquitectura](../ARQUITECTURA.md).
